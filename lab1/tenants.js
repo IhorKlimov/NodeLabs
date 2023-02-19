@@ -13,7 +13,7 @@ module.exports = class Tenants {
     }
 
     get(id) {
-        const found = this.list.filter(tenant => tenant.id === id);
+        const found = this.list.filter(tenant => tenant._id === id);
         if (found.length >= 1) {
             return found[0];
         } else {

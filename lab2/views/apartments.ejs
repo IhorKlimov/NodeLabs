@@ -147,7 +147,7 @@
     <h3>Apartments</h3>
     <div class="list-group">
         <% for(var i = 0; i < apartments.length; i++) { %>
-            <a href="/apartment/<%= apartments[i].id %>" class="list-group-item list-group-item-action">
+            <a href="/apartment/<%= apartments[i]._id %>" class="list-group-item list-group-item-action">
                 <img src="<%= apartments[i].image %>" alt="">
                 <div>
                     <p class="title"><%= apartments[i].title %></p>

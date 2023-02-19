@@ -13,7 +13,7 @@ module.exports = class Apartments {
     }
 
     get(apartmentId) {
-        const found = this.list.filter(apartment => apartment.id === apartmentId);
+        const found = this.list.filter(apartment => apartment._id === apartmentId);
         if (found.length >= 1) {
             return found[0];
         } else {

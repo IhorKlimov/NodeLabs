@@ -13,7 +13,7 @@ module.exports = class Reviews {
     }
 
     getByReviewId(id) {
-        const found = this.list.filter(review => review.id === id);
+        const found = this.list.filter(review => review._id === id);
         if (found.length >= 1) {
             return found[0];
         } else {

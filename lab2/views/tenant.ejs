@@ -79,7 +79,7 @@
     <h3>Reviews:</h3>
     <div class="list-group">
         <% for(let i = 0; i < reviews.length; i++) { %>
-            <a href="/review/<%= reviews[i].id %>" class="list-group-item list-group-item-action">
+            <a href="/review/<%= reviews[i]._id %>" class="list-group-item list-group-item-action">
             <!--                <img src="<%= reviews[i].image %>" alt="">-->
                 <div>
                     <p class="title"><%= reviews[i].text %></p>
