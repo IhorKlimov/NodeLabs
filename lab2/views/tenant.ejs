@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    img {
+        height: 400px;
+        width: 400px;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .list-group-item-action {
+        display: flex;
+    }
+
+    a div {
+        margin-top: 10px;
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a .title {
+        font-size: 20px;
+        color: black;
+    }
+
+    a .location {
+        font-size: 15px;
+    }
+</style>
+<body>
+
+<script>
+    function logOut() {
+        console.log("logout")
+        sessionStorage.setItem("account", null);
+        location.reload();
+    }
+</script>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">WebSiteName</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Apartments</a></li>
+            <li class="active"><a href="/tenants">Tenants</a></li>
+            <li><a href="/reviews">Reviews</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <img src="<%= tenant.image %>" alt="">
+    <h3><%= tenant.name %></h3>
+    <p><%= tenant.location %></p>
+
+    <h3>Bookings:</h3>
+    <div class="list-group">
+        <% for(var i = 0; i < bookings.length; i++) { %>
+            <div class="list-group-item list-group-item-action">
+                <div>
+                    <p class="title">Dates: <%= new Date(bookings[i].startDate).toLocaleDateString("en-US") %> - <%= new Date(bookings[i].endDate).toLocaleDateString("en-US") %></p>
+
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <h3>Reviews:</h3>
+    <div class="list-group">
+        <% for(let i = 0; i < reviews.length; i++) { %>
+            <a href="/review/<%= reviews[i].id %>" class="list-group-item list-group-item-action">
+            <!--                <img src="<%= reviews[i].image %>" alt="">-->
+                <div>
+                    <p class="title"><%= reviews[i].text %></p>
+                    <p class="location">Stars: <%= reviews[i].stars %></p>
+                </div>
+            </a>
+        <% } %>
+    </div>
+</div>
+
+</body>
+</html>

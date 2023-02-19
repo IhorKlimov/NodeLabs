@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    img {
+        height: 400px;
+        width: 400px;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .list-group-item-action {
+        display: flex;
+    }
+
+    a div {
+        margin-top: 10px;
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a .title {
+        font-size: 20px;
+        color: black;
+    }
+
+    a .location {
+        font-size: 15px;
+    }
+</style>
+
+<script>
+    const apartmentId = "<%= apartment.id %>";
+    const authKey = "#n2n23tMGFm41VnwegmM#923mFMwefG<WwerWmwef";
+
+    function logOut() {
+        console.log("logout")
+        sessionStorage.setItem("account", null);
+        location.reload();
+    }
+
+    function book(form) {
+        const tenantId = document.forms["booking-creation"].tenantId.value;
+        const start = document.forms["booking-creation"].startDate.value;
+        const end = document.forms["booking-creation"].endDate.value;
+
+        if (!start || !end) {
+            alert("Please select dates");
+            return false;
+        }
+
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        if (endDate.getTime() === startDate.getTime()) {
+            alert("Dates shouldn't be the same");
+            return false;
+        } else if (endDate.getTime() < startDate.getTime()) {
+            alert("End date should be after starting date");
+            return false;
+        }
+
+        let formBody = [];
+        formBody.push(encodeURIComponent("apartmentId") + "=" + encodeURIComponent(apartmentId));
+        formBody.push(encodeURIComponent("tenantId") + "=" + encodeURIComponent(tenantId));
+        formBody.push(encodeURIComponent("startDate") + "=" + encodeURIComponent(startDate.toISOString()));
+        formBody.push(encodeURIComponent("endDate") + "=" + encodeURIComponent(endDate.toISOString()));
+        formBody = formBody.join("&");
+
+        fetch('http://localhost:3000/bookings', {
+            method: 'POST',
+            headers: {
+                'authKey': authKey,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formBody
+        }).then((response) => {
+            return response.text();
+        }).then((response) => {
+            console.log(response);
+
+            if (response === "Success") {
+                location.reload();
+            } else {
+                alert(response);
+            }
+        }).catch((e) => {
+            console.log(e)
+        });
+    }
+
+    function createReview(form) {
+        console.log("create review")
+        const tenantId = document.forms["review-creation"].reviewTenantId.value;
+        const text = document.forms["review-creation"].reviewText.value;
+        const stars = document.forms["review-creation"].stars.value;
+
+        if (!text || !stars) {
+            alert("Please write a review");
+            return false;
+        }
+
+        let formBody = [];
+        formBody.push(encodeURIComponent("apartmentId") + "=" + encodeURIComponent(apartmentId));
+        formBody.push(encodeURIComponent("tenantId") + "=" + encodeURIComponent(tenantId));
+        formBody.push(encodeURIComponent("text") + "=" + encodeURIComponent(text));
+        formBody.push(encodeURIComponent("stars") + "=" + encodeURIComponent(stars));
+        formBody = formBody.join("&");
+
+        fetch('http://localhost:3000/reviews', {
+            method: 'POST',
+            headers: {
+                'authKey': authKey,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formBody
+        }).then((response) => {
+            return response.text();
+        }).then((response) => {
+            console.log(response);
+
+            if (response === "Success") {
+                location.reload();
+            } else {
+                alert(response);
+            }
+        }).catch((e) => {
+            console.log(e)
+        });
+    }
+</script>
+
+<body>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">WebSiteName</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Apartments</a></li>
+            <li><a href="/tenants">Tenants</a></li>
+            <li><a href="/reviews">Reviews</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <img src="<%= apartment.image %>" alt="">
+    <h3><%= apartment.title %></h3>
+    <p><%= apartment.location %></p>
+
+    <h3>Bookings:</h3>
+    <div class="list-group">
+        <% for(var i = 0; i < bookings.length; i++) { %>
+            <div class="list-group-item list-group-item-action">
+                <div>
+                    <p class="title">Dates: <%= new Date(bookings[i].startDate).toLocaleDateString("en-US") %>
+                        - <%= new Date(bookings[i].endDate).toLocaleDateString("en-US") %></p>
+
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Book</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Book</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form name="booking-creation">
+                        <div class="form-group">
+                            <label for="title">Tenant id</label>
+                            <input type="text" class="form-control" id="tenantId" aria-describedby="emailHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Start date</label>
+                            <input type="date" class="form-control" id="startDate" aria-describedby="emailHelp"
+                                   placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="image">End date</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Reviews:</h3>
+    <div class="list-group">
+        <% for(let i = 0; i < reviews.length; i++) { %>
+            <a href="/review/<%= reviews[i].id %>" class="list-group-item list-group-item-action">
+                <!--                <img src="<%= reviews[i].image %>" alt="">-->
+                <div>
+                    <p class="title"><%= reviews[i].text %></p>
+                    <p class="location">Stars: <%= reviews[i].stars %></p>
+                </div>
+            </a>
+        <% } %>
+    </div>
+
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#reviewModal">Leave review</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">Leave review</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form name="review-creation">
+                        <div class="form-group">
+                            <label for="title">Tenant id</label>
+                            <input type="text" class="form-control" id="tenantId" aria-describedby="reviewTenantId">
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Review</label>
+                            <input type="text" class="form-control" id="startDate" aria-describedby="reviewText">
+                        </div>
+                        <div class="form-group">
+                            <label for="image">Stars</label>
+                            <input type="number" class="form-control" id="stars">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1; //January is 0!
+    const yyyy = today.getFullYear();
+
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+
+    const formatted = yyyy + '-' + mm + '-' + dd;
+    document.getElementById("startDate").setAttribute("min", formatted);
+    document.getElementById("endDate").setAttribute("min", formatted);
+
+    const form1 = document.querySelector('form')[0];
+    form1.addEventListener('submit', (e) => {
+        e.preventDefault();
+        book(form1);
+    });
+
+    const form2 = document.querySelector('form')[1];
+    form2.addEventListener('submit', (e) => {
+        e.preventDefault();
+        createReview(form2);
+    });
+</script>
+
+</body>
+</html>

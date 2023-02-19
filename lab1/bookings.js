@@ -19,7 +19,7 @@ module.exports = class Bookings {
 
         console.log(apartmentBookings)
         apartmentBookings.forEach((b, index) => {
-            console.log("here")
+            
             console.log(b);
             if (this.dateRangeOverlaps(booking.startDate, booking.endDate, b.startDate, b.endDate)) {
                 console.log("True")

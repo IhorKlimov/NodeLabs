@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    img {
+        height: 400px;
+        width: 400px;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .review-image{
+        width: 100px;
+        height: 100px;
+    }
+
+    .list-group-item-action {
+        display: flex;
+    }
+
+    a div {
+        margin-top: 10px;
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a .title {
+        font-size: 20px;
+        color: black;
+    }
+
+    a .location {
+        font-size: 15px;
+    }
+
+    .content{
+        margin-left: 20px;
+    }
+
+    .apartment {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .details{
+        margin-left: 20px;
+    }
+</style>
+<body>
+
+<script>
+    function logOut() {
+        console.log("logout")
+        sessionStorage.setItem("account", null);
+        location.reload();
+    }
+</script>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">WebSiteName</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Apartments</a></li>
+            <li><a href="/tenants">Tenants</a></li>
+            <li class="active"><a href="/reviews">Reviews</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="apartment">
+        <img src="<%= apartment.image %>" alt="">
+        <div class="details">
+            <h3><%= apartment.title %></h3>
+            <p><%= apartment.location %></p>
+        </div>
+    </div>
+
+    <div class="list-group">
+        <div class="list-group-item list-group-item-action">
+            <img class="review-image" src="<%= tenant.image %>" alt="">
+                <div class="content">
+                <p class="title"><%= tenant.name %></p>
+                <p class="title"><%= review.text %></p>
+                <p class="location">Stars: <%= review.stars %></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -9,9 +9,11 @@ const Review = require('./review.js');
 const Reviews = require('./reviews.js');
 const Authorization = require('./authorization');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express()
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(cors())
 const port = 3000
 
 const apartments = new Apartments();
@@ -50,7 +52,9 @@ app.post('/apartments', (req, res) => {
     }
     
     const title = req.body.title;
-    apartments.add(new Apartment(title));
+    const image = req.body.image;
+    const location = req.body.location;
+    apartments.add(new Apartment(title, image, location));
     res.send("Success");
 })
 
@@ -128,7 +132,9 @@ app.post('/tenants', (req, res) => {
     }
     
     const name = req.body.name;
-    tenants.add(new Tenant(name));
+    const image = req.body.image;
+    const location = req.body.location;
+    tenants.add(new Tenant(name, image, location));
     res.send("Success");
 })
 
@@ -143,11 +149,11 @@ app.get('/reviews', (req, res) => {
     const apartmentId = req.query.apartmentId;
 
     if (tenantId) {
-        res.send(reviews.getByTenantId(tenantId) ?? "Not found");
+        res.send(reviews.getByTenantId(tenantId) ?? []);
     } else if (reviewId) {
-        res.send(reviews.getByReviewId(reviewId) ?? "Not found");
+        res.send(reviews.getByReviewId(reviewId) ?? []);
     } else if (apartmentId) {
-        res.send(reviews.getByApartmentId(apartmentId) ?? "Not found");
+        res.send(reviews.getByApartmentId(apartmentId) ?? []);
     } else {
         res.send(reviews.getAll());
     }
@@ -182,7 +188,6 @@ app.post('/reviews', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
-
 
 /*
 * Entities:

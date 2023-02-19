@@ -24,7 +24,7 @@ module.exports = class Reviews {
     getByApartmentId(id) {
         const found = this.list.filter(review => review.apartmentId === id);
         if (found.length >= 1) {
-            return found[0];
+            return found;
         } else {
             return null;
         }
@@ -33,7 +33,7 @@ module.exports = class Reviews {
     getByTenantId(id) {
         const found = this.list.filter(review => review.tenantId === id);
         if (found.length >= 1) {
-            return found[0];
+            return found;
         } else {
             return null;
         }

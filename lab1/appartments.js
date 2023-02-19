@@ -9,7 +9,7 @@ module.exports = class Apartments {
     }
 
     add(apartment) {
-        this.list.push(apartment);
+        this.list.unshift(apartment);
     }
 
     get(apartmentId) {

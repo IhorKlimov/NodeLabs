@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    img {
+        height: 200px;
+        width: 200px;
+        object-fit: cover; /* Scale the image so it covers whole area, thus will likely crop */
+        object-position: center; /* Center the image within the element */
+    }
+
+    .list-group-item-action {
+        display: flex;
+    }
+
+    a div {
+        margin-top: 10px;
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a .title {
+        font-size: 20px;
+        color: black;
+    }
+
+    a .location {
+        font-size: 15px;
+    }
+
+    .fab {
+        position: fixed;
+        bottom: 20px;
+        right: 30px;
+    }
+
+    .fab button {
+        cursor: pointer;
+        width: 48px;
+        height: 48px;
+        border-radius: 30px;
+        background-color: #cb60b3;
+        border: none;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, .4);
+        font-size: 24px;
+        color: white;
+
+        -webkit-transition: .2s ease-out;
+        -moz-transition: .2s ease-out;
+        transition: .2s ease-out;
+    }
+
+    .fab button:focus {
+        outline: none;
+    }
+
+    .fab button.main {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-color: #5b19b7;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+    }
+
+    .fab button.main:before {
+        content: '+';
+    }
+
+    .fab button.main:active,
+    .fab button.main:focus {
+        outline: none;
+        background-color: #7716ff;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, .5);
+    }
+
+    .fab button.main:active + ul,
+    .fab button.main:focus + ul {
+        bottom: 70px;
+    }
+
+    .fab button.main:active + ul li,
+    .fab button.main:focus + ul li {
+        margin-bottom: 10px;
+        opacity: 1;
+    }
+
+    .fab button.main:active + ul li:hover label,
+    .fab button.main:focus + ul li:hover label {
+        opacity: 1;
+    }
+</style>
+<body>
+
+<script>
+    const authKey = "#n2n23tMGFm41VnwegmM#923mFMwefG<WwerWmwef"
+
+
+    function logOut() {
+        console.log("logout")
+        sessionStorage.setItem("account", null);
+        location.reload();
+    }
+
+    function createNewApartment() {
+        const title = document.forms['apartment-creation'].title.value;
+        const image = document.forms['apartment-creation'].image.value;
+        const location = document.forms['apartment-creation'].location.value;
+
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("POST", "http://localhost:3000/apartments", false); // false for synchronous request
+        xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xmlHttp.setRequestHeader('authKey', authKey);
+        xmlHttp.send("title=" + title + "&image=" + image + "&location=" + location);
+
+
+        location.reload();
+
+        return false;
+    }
+</script>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">WebSiteName</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Apartments</a></li>
+            <li><a href="/tenants">Tenants</a></li>
+            <li><a href="/reviews">Reviews</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h3>Apartments</h3>
+    <div class="list-group">
+        <% for(var i = 0; i < apartments.length; i++) { %>
+            <a href="/apartment/<%= apartments[i].id %>" class="list-group-item list-group-item-action">
+                <img src="<%= apartments[i].image %>" alt="">
+                <div>
+                    <p class="title"><%= apartments[i].title %></p>
+                    <p class="location"><%= apartments[i].location %></p>
+                </div>
+            </a>
+        <% } %>
+
+        <div class="fab">
+            <button class="main" data-toggle="modal" data-target="#exampleModal"></button>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create new apartment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form name="apartment-creation" onsubmit="return createNewApartment()">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" aria-describedby="emailHelp"
+                                       placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Image url</label>
+                                <input type="text" class="form-control" id="image" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" class="form-control" id="location" placeholder="">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
