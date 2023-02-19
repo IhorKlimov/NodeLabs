@@ -264,4 +264,6 @@ app.listen(port, () => {
 *
 * brew services start mongodb-community@6.0
 * brew services stop mongodb-community@6.0
+*
+* docker run -p 6379:6379 -it redis/redis-stack-server:latest
 * */
