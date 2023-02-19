@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose');
+const redis = require('redis');
 const Authorization = require('./authorization');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -17,6 +18,42 @@ app.use(cors())
 const port = 3000
 
 const authorization = new Authorization();
+const client = redis.createClient();
+client.connect();
+client.on('error', err => console.log('Redis Client Error', err));
+const exec = mongoose.Query.prototype.exec;
+
+mongoose.Query.prototype.exec = async function () {
+    const key = JSON.stringify({
+        ...this.getQuery()
+    });
+
+    console.log(this.model.modelName, key);
+    const cacheValue = await client.hGet(this.model.modelName, key);
+
+    if (cacheValue) {
+        const doc = JSON.parse(cacheValue);
+
+        console.log("Response from Redis");
+        return Array.isArray(doc)
+            ? doc.map(d => new this.model(d))
+            : new this.model(doc);
+    }
+
+    const result = await exec.apply(this, arguments);
+    client.hSet(this.model.modelName, key, JSON.stringify(result));
+    client.expire(this.model.modelName, 60);
+
+    console.log("Response from MongoDB");
+    return result;
+};
+
+module.exports = {
+    clearKey(hashKey) {
+        client.del(JSON.stringify(hashKey));
+    }
+};
+
 
 app.get('/', async (req, res) => {
     if (!authorization.checkAuthorization(req.header("authKey"))) {
@@ -37,7 +74,7 @@ app.get('/apartments', async (req, res) => {
     if (apartmentId) {
         res.send(await Apartment.findById(apartmentId).exec() ?? "Not found");
     } else {
-        res.send(await Apartment.find());
+        res.send(await Apartment.find().exec());
     }
 })
 
@@ -53,7 +90,7 @@ app.post('/apartments', async (req, res) => {
 
     const apartment = new Apartment({title, image, location});
     await apartment.save();
-
+    client.del("Apartment");
     res.send("Success");
 })
 
@@ -114,6 +151,7 @@ app.post('/bookings', async (req, res) => {
     });
     if (isAvailableForGivenDates) {
         await new Booking({apartmentId, tenantId, startDate: new Date(startDate), endDate: new Date(endDate)}).save();
+        client.del("Booking");
         res.send("Success");
     } else {
         res.send("Not available for given dates");
@@ -144,6 +182,7 @@ app.post('/tenants', async (req, res) => {
     const image = req.body.image;
     const location = req.body.location;
     await new Tenant({name, image, location}).save();
+    client.del("Tenant");
     res.send("Success");
 })
 
@@ -190,6 +229,7 @@ app.post('/reviews', async (req, res) => {
     }
 
     await new Review({tenantId, apartmentId, text, stars}).save();
+    client.del("Review");
     res.send("Success");
 })
 
