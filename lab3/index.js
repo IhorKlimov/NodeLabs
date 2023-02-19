@@ -48,13 +48,6 @@ mongoose.Query.prototype.exec = async function () {
     return result;
 };
 
-module.exports = {
-    clearKey(hashKey) {
-        client.del(JSON.stringify(hashKey));
-    }
-};
-
-
 app.get('/', async (req, res) => {
     if (!authorization.checkAuthorization(req.header("authKey"))) {
         res.status(401).send("Unauthorized");
